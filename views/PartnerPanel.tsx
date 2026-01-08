@@ -5,6 +5,9 @@ import { formatCurrency } from '../utils/validation';
 
 const PartnerPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'dashboard' | 'agenda'>('dashboard');
+  const [editImageId, setEditImageId] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [courts, setCourts] = useState([...MOCK_COURTS]);
 
   const stats = [
     { label: 'Ganhos Totais (Antecipado)', value: formatCurrency(2450.50), color: 'bg-green-100 text-green-700' },
@@ -93,9 +96,15 @@ const PartnerPanel: React.FC = () => {
 
       {activeTab === 'inventory' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
-          {MOCK_COURTS.slice(0, 2).map(court => (
+          {courts.map(court => (
             <div key={court.id} className="bg-white p-6 rounded-3xl border shadow-sm flex gap-6 items-center">
-              <img src={court.image} alt={court.name} className="w-32 h-32 rounded-2xl object-cover" />
+              <div className="relative">
+                <img src={court.image} alt={court.name} className="w-32 h-32 rounded-2xl object-cover" />
+                <button
+                  className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded hover:bg-indigo-700 transition"
+                  onClick={() => { setEditImageId(court.id); setImageUrl(court.image); }}
+                >Trocar imagem</button>
+              </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg">{court.name}</h3>
                 <p className="text-gray-500 text-sm mb-3">{court.sport}</p>
@@ -109,6 +118,34 @@ const PartnerPanel: React.FC = () => {
               </div>
             </div>
           ))}
+          {editImageId && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md space-y-4">
+                <h2 className="text-xl font-bold mb-2">Trocar imagem da quadra</h2>
+                <input
+                  type="text"
+                  className="w-full p-3 rounded-xl border bg-gray-100 text-gray-800"
+                  placeholder="Cole a URL da nova imagem"
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                />
+                <img src={imageUrl} alt="Pré-visualização" className="w-full h-40 object-cover rounded-xl border" />
+                <div className="flex gap-2 mt-4">
+                  <button
+                    className="flex-1 py-3 rounded-2xl font-bold shadow transition bg-indigo-600 text-white hover:bg-indigo-700"
+                    onClick={() => {
+                      setCourts(prev => prev.map(c => c.id === editImageId ? { ...c, image: imageUrl } : c));
+                      setEditImageId(null);
+                    }}
+                  >Salvar</button>
+                  <button
+                    className="flex-1 py-3 rounded-2xl font-bold shadow transition bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    onClick={() => setEditImageId(null)}
+                  >Cancelar</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
