@@ -7,7 +7,12 @@ const PartnerPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'dashboard' | 'agenda'>('dashboard');
   const [editImageId, setEditImageId] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState('');
-  const [courts, setCourts] = useState([...MOCK_COURTS]);
+  const [editCourtId, setEditCourtId] = useState<string | null>(null);
+  const [editCourtPrice, setEditCourtPrice] = useState('');
+  const [editCourtTimes, setEditCourtTimes] = useState('');
+  const [courts, setCourts] = useState(
+    [...MOCK_COURTS].map(c => ({ ...c, availableTimes: ['08:00','09:00','10:00','11:00','14:00','15:00','16:00','18:00','19:00','20:00','21:00','22:00'] }))
+  );
 
   const stats = [
     { label: 'Ganhos Totais (Antecipado)', value: formatCurrency(2450.50), color: 'bg-green-100 text-green-700' },
@@ -111,13 +116,62 @@ const PartnerPanel: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-indigo-600">{formatCurrency(court.pricePerHour)}/h</span>
                   <div className="flex gap-2">
-                    <button className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200"><svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                    <button className="p-2 bg-red-50 rounded-lg hover:bg-red-100"><svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                    <button
+                      className="p-2 bg-yellow-100 rounded-lg hover:bg-yellow-200"
+                      title="Editar valores e horários"
+                      onClick={() => {
+                        setEditCourtId(court.id);
+                        setEditCourtPrice(String(court.pricePerHour));
+                        setEditCourtTimes((court.availableTimes || []).join(", "));
+                      }}
+                    >
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 20h9" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" /></svg>
+                    </button>
                   </div>
                 </div>
+                <div className="text-xs text-gray-400 mt-1">Horários: {(court.availableTimes || []).join(', ')}</div>
               </div>
             </div>
           ))}
+          {editCourtId && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md space-y-4">
+                <h2 className="text-xl font-bold mb-2">Editar valores e horários</h2>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Valor da hora (R$)</label>
+                <input
+                  type="number"
+                  className="w-full p-3 rounded-xl border bg-gray-100 text-gray-800 mb-2"
+                  value={editCourtPrice}
+                  onChange={e => setEditCourtPrice(e.target.value)}
+                />
+                <label className="block text-sm font-bold text-gray-700 mb-1">Horários disponíveis (separados por vírgula)</label>
+                <input
+                  type="text"
+                  className="w-full p-3 rounded-xl border bg-gray-100 text-gray-800 mb-2"
+                  value={editCourtTimes}
+                  onChange={e => setEditCourtTimes(e.target.value)}
+                  placeholder="08:00, 09:00, 10:00, ..."
+                />
+                <div className="flex gap-2 mt-4">
+                  <button
+                    className="flex-1 py-3 rounded-2xl font-bold shadow transition bg-indigo-600 text-white hover:bg-indigo-700"
+                    onClick={() => {
+                      setCourts(prev => prev.map(c => c.id === editCourtId ? {
+                        ...c,
+                        pricePerHour: Number(editCourtPrice),
+                        availableTimes: editCourtTimes.split(',').map(t => t.trim()).filter(Boolean)
+                      } : c));
+                      setEditCourtId(null);
+                    }}
+                  >Salvar</button>
+                  <button
+                    className="flex-1 py-3 rounded-2xl font-bold shadow transition bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    onClick={() => setEditCourtId(null)}
+                  >Cancelar</button>
+                </div>
+              </div>
+            </div>
+          )}
           {editImageId && (
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
               <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md space-y-4">
