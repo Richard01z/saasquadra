@@ -17,6 +17,7 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
   const [selectedDate, setSelectedDate] = useState('2024-05-20');
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showPixQR, setShowPixQR] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -36,12 +37,17 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
   const handleBooking = () => {
     if (!selectedTime) return;
     setShowPayment(true);
+    setShowPixQR(false);
   };
 
-  const handlePayment = async () => {
+  const handlePayment = () => {
+    setShowPixQR(true);
+  };
+
+  const handlePixConfirm = async () => {
     setIsProcessing(true);
-    // Simulate payment API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Simula confirmação do pagamento
+    await new Promise(resolve => setTimeout(resolve, 1500));
     const reservation: Reservation = {
       id: Math.random().toString(36).substr(2, 9),
       courtId: court.id,
@@ -58,7 +64,9 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
     setConfirmedReservation(reservation);
     setShowReceipt(true);
     setShowPayment(false);
+    setShowPixQR(false);
     setIsProcessing(false);
+    setSelectedTime(null);
   };
 
   if (showReceipt && confirmedReservation) {
@@ -116,6 +124,39 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
   }
 
   if (showPayment) {
+    if (showPixQR) {
+      return (
+        <div className="max-w-lg mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border mt-12">
+          <div className="bg-green-600 p-8 text-center text-white">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3"></path></svg>
+            </div>
+            <h2 className="text-2xl font-bold">Pagamento via Pix</h2>
+            <p className="opacity-90">Escaneie o QR Code abaixo para pagar 50% do valor da reserva.</p>
+          </div>
+          <div className="p-8 space-y-6 flex flex-col items-center">
+            <div className="bg-white p-4 rounded-2xl border shadow flex flex-col items-center">
+              {/* QR Code fake para simulação */}
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PagamentoPixSimulado" alt="QR Code Pix" className="w-40 h-40 mb-4" />
+              <span className="text-gray-700 text-sm">Valor: <b>{formatCurrency(prepayValue)}</b></span>
+            </div>
+            <button
+              onClick={handlePixConfirm}
+              disabled={isProcessing}
+              className={`w-full py-4 rounded-2xl font-bold shadow-xl transition flex items-center justify-center gap-3 bg-indigo-600 text-white hover:bg-indigo-700 ${isProcessing ? 'opacity-60 cursor-not-allowed' : ''}`}
+            >
+              {isProcessing ? 'Confirmando...' : 'Já paguei'}
+            </button>
+            <button
+              onClick={() => setShowPixQR(false)}
+              className="w-full py-3 rounded-2xl font-bold shadow transition bg-gray-200 text-gray-700 hover:bg-gray-300"
+            >
+              Voltar
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="max-w-lg mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border mt-12">
         <div className="bg-indigo-600 p-8 text-center text-white">
@@ -146,7 +187,7 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
               disabled={isProcessing}
               className={`w-full py-4 rounded-2xl font-bold shadow-xl transition flex items-center justify-center gap-3 bg-green-600 text-white hover:bg-green-700 ${isProcessing ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
-              {isProcessing ? 'Processando...' : 'Pagar com Pix'}
+              Pagar com Pix
             </button>
             <button
               onClick={() => { setShowManual(true); setShowPayment(false); }}
