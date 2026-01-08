@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { validateCPF } from '../utils/validation';
 
 interface AuthProps {
-  onSuccess: () => void;
+  onSuccess: (email?: string) => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onSuccess }) => {
@@ -34,7 +34,7 @@ const Auth: React.FC<AuthProps> = ({ onSuccess }) => {
     }
 
     // Success
-    onSuccess();
+    onSuccess(formData.email);
   };
 
   return (

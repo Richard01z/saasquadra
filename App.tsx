@@ -23,8 +23,11 @@ const App: React.FC = () => {
     // The view switching is handled inside CourtBooking for the receipt
   };
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = (userEmail?: string) => {
     setIsLoggedIn(true);
+    if (userEmail) {
+      window.localStorage.setItem('userEmail', userEmail);
+    }
     setView('home');
   };
 
@@ -38,18 +41,19 @@ const App: React.FC = () => {
             court={selectedCourt} 
             onConfirm={handleConfirmReservation}
             onBack={() => setView('home')} 
+            reservations={reservations.filter(r => r.courtId === selectedCourt.id)}
           />
         ) : <CustomerHome onSelectCourt={handleSelectCourt} />;
       case 'partner-admin':
         return <PartnerPanel />;
       case 'auth':
-        return <Auth onSuccess={handleAuthSuccess} />;
+        return <Auth onSuccess={(email) => handleAuthSuccess(email)} />;
       case 'profile':
         return (
           <div className="py-12 text-center space-y-4">
              <h1 className="text-2xl font-bold">Meu Perfil</h1>
              <p className="text-gray-500">Suas reservas aparecerão aqui em breve.</p>
-             <button onClick={() => setIsLoggedIn(false)} className="text-red-500 font-bold underline">Sair da conta</button>
+             <button onClick={() => { setIsLoggedIn(false); window.localStorage.removeItem('userEmail'); }} className="text-red-500 font-bold underline">Sair da conta</button>
           </div>
         );
       default:
