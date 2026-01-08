@@ -1,3 +1,8 @@
+function formatDateBR(dateStr: string) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
 
 import React, { useState } from 'react';
 import ReservationReceipt from '../components/ReservationReceipt';
@@ -88,7 +93,7 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-gray-500">DATA</p>
-              <p className="font-semibold">{confirmedReservation.date}</p>
+              <p className="font-semibold">{formatDateBR(confirmedReservation.date)}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">HORÁRIO</p>
@@ -208,7 +213,7 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
   }
 
   if (showManual) {
-    const msg = `Olá! Gostaria de reservar a quadra "${court.name}" no dia ${selectedDate} às ${selectedTime}.`;
+    const msg = `Olá! Gostaria de reservar a quadra "${court.name}" no dia ${formatDateBR(selectedDate)} às ${selectedTime}.`;
     return (
       <div className="max-w-lg mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border mt-12">
         <div className="bg-blue-600 p-8 text-center text-white">

@@ -1,3 +1,8 @@
+function formatDateBR(dateStr: string) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
 import React from 'react';
 import { Reservation } from '../types';
 import { formatCurrency } from '../utils/validation';
@@ -25,7 +30,7 @@ const ReservationReceipt: React.FC<ReservationReceiptProps> = ({ reservation, on
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-xs text-gray-500">DATA</p>
-          <p className="font-semibold">{reservation.date}</p>
+          <p className="font-semibold">{formatDateBR(reservation.date)}</p>
         </div>
         <div>
           <p className="text-xs text-gray-500">HORÁRIO</p>
