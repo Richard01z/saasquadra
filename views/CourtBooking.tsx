@@ -149,16 +149,16 @@ const CourtBooking: React.FC<CourtBookingProps> = ({ court, onConfirm, onBack, r
               {isProcessing ? 'Processando...' : 'Pagar com Pix'}
             </button>
             <button
-              onClick={() => setShowPayment(false)}
-              className="w-full py-3 rounded-2xl font-bold shadow transition bg-gray-200 text-gray-700 hover:bg-gray-300"
-            >
-              Cancelar
-            </button>
-            <button
               onClick={() => { setShowManual(true); setShowPayment(false); }}
               className="w-full py-3 rounded-2xl font-bold shadow transition bg-blue-100 text-blue-700 hover:bg-blue-200"
             >
               Reservar direto com o atendente
+            </button>
+            <button
+              onClick={() => setShowPayment(false)}
+              className="w-full py-3 rounded-2xl font-bold shadow transition bg-gray-200 text-gray-700 hover:bg-gray-300"
+            >
+              Cancelar
             </button>
           </div>
         </div>
