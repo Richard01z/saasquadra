@@ -11,7 +11,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, activeView, setView, isLoggedIn }) => {
   // ADMIN ID para liberar área de parceiro
-  const ADMIN_EMAIL = 'seuemail@dominio.com'; // Troque para seu email
+  const ADMIN_EMAIL = 'iorichardcontato@gmail.com';
   const isAdmin = isLoggedIn && window.localStorage.getItem('userEmail') === ADMIN_EMAIL;
 
   return (
